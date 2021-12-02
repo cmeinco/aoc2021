@@ -1,25 +1,46 @@
 import logging
 
+from utils.input import readinputfile
+
 def puzzle01(data):
-    logging.debug(f"Executing Puzzle Stage 1")
-    return "NotYetImplemented"
+    logging.debug("Executing Puzzle Stage 1")
+    nums = []
+    for item in data:
+        nums.append(int(item))
+
+    count=0
+    for x in range(0, len(nums)):
+        if x == 0:
+            continue
+        else:
+            if nums[x] > nums[x-1]:
+                count += 1
+
+    return count
 
 def puzzle02(data):
-    logging.info(f"Executing Puzzle Stage 2")
-    return "NotYetImplemented"
+    originnums = []
+    for item in data:
+        originnums.append(int(item))
 
-def readinputfile(filename):
-    logging.debug(f"Reading {filename}")
-    lines = []
-    with open(filename) as file:
-        while line := file.readline().rstrip():
-            lines.append(line)
-    return lines
+    nums = []
+    for x in range(0, len(originnums)-2):
+        nums.append(originnums[x]+originnums[x+1]+originnums[x+2])
+
+    count=0
+    for x in range(0, len(nums)):
+        if x == 0:
+            continue
+        else:
+            if nums[x] > nums[x-1]:
+                count += 1
+
+    return count
 
 def runfinalinput():
     finaldata = readinputfile("finalinput.txt")
-    logging.info("Final Answer for Puzzle 1:" + puzzle01(finaldata))
-    logging.info("Final Answer for Puzzle 2:" + puzzle02(finaldata))
+    logging.info("Final Answer for Puzzle 1:" + str(puzzle01(finaldata)))
+    logging.info("Final Answer for Puzzle 2:" + str(puzzle02(finaldata)))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
