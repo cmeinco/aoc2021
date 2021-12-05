@@ -11,15 +11,10 @@ def puzzle01(data):
     return count
 
 def puzzle02(data):
-    originnums = []
-    for item in data:
-        originnums.append(int(item))
-
-    nums = []
-    for x in range(0, len(originnums)-2):
-        nums.append(originnums[x]+originnums[x+1]+originnums[x+2])
-
-    return puzzle01(nums)
+    nextdata=[]
+    for x in range(0, len(data)-2):
+        nextdata.append(int(data[x])+int(data[x+1])+int(data[x+2]))
+    return puzzle01(nextdata)
 
 def runfinalinput():
     finaldata = readinputfile2("finalinput.txt")
