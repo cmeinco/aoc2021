@@ -1,8 +1,8 @@
 from unittest import TestCase
 import logging
 
-from day04.main import puzzle01
-from day04.main import puzzle02
+from day05.main import puzzle01
+from day05.main import puzzle02
 from utils.input import readinputfile2
 
 
@@ -12,14 +12,14 @@ class Test(TestCase):
 
     def test_puzzle01(self):
         input = readinputfile2("test_file_1.txt")
-        expected = 4512
+        expected = 5
         response = puzzle01(input)
         self.assertEqual(expected, response)
         logging.info("Testing Answer for Puzzle 1:" + str(response))
 
     def test_puzzle02(self):
         input = readinputfile2("test_file_1.txt")
-        expected = 1924
+        expected = 12
         response = puzzle02(input)
         self.assertEqual(expected, response)
         logging.info("Testing Answer for Puzzle 2:" + str(response))

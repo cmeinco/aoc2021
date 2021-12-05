@@ -1,158 +1,186 @@
 import logging
 
 from utils.input import readinputfile2
+import re
 
-def isWinner(board):
-    rowhitcount=0
-    for row in board:
-        for cell in row:
-            if cell == "X":
-                rowhitcount+=1
-        if rowhitcount == 5:
-            return True
-        rowhitcount=0
-
-    colhitcount=0
-    for y in range(len(board[0])):
-        for x in range(len(board)):
-            if board[x][y] == "X":
-                colhitcount+=1
-        if colhitcount == 5:
-            return True
-        colhitcount=0
-
-    return False
-
-def boardSum(board):
-
-    sum=0
-    for x in range(len(board)):
-        for y in range(len(board[0])):
-            #logging.debug(f"{board[x][y]}")
-            if board[x][y] != 'X':
-                sum = sum + int(board[x][y])
-
-    logging.debug(f"Found Sum: {sum}")
-    return sum
 
 def puzzle01(data):
-    #print(data)
     logging.debug("Executing Puzzle Stage 1")
-    callednumbers = data[0].rstrip().split(",")
 
-    boards = []
-    for line in range(len(data)):
-        #print(data[line])
-        if line == 0:
-            logging.debug("skipping 0 line.")
-        elif data[line] == "" or data[line] == "\n":
-            #logging.debug("new board detected")
-            board = []
-            boards.append(board)
+    srcxs = []
+    srcys = []
+    dstxs = []
+    dstys = []
+
+    for line in data:
+        m = re.match("^(\d+), *(\d+) *-> *(\d+), *(\d+)$", line)
+        if m:
+            srcxs.append(int(m.group(1)))
+            srcys.append(int(m.group(2)))
+            dstxs.append(int(m.group(3)))
+            dstys.append(int(m.group(4)))
+
+        # whichever is equal, draw line between other two.
+
+    # logging.debug(srcxs)
+
+    coveredpoints = {}
+
+    for i in range(len(srcxs)):
+        if srcxs[i] == dstxs[i]:
+            # x is same / vert line
+            # logging.debug(f"x same;vert line {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+            for y in range(min(srcys[i], dstys[i]), max(srcys[i], dstys[i]) + 1):
+                key = f"{srcxs[i]}-{y}"
+                # logging.debug(f"Updating {key}")
+                if not coveredpoints.get(key):
+                    coveredpoints[key] = 0
+                coveredpoints[key] = int(coveredpoints[key]) + 1
+            # logging.debug(f"Board\n{coveredpoints}")
+
+        elif srcys[i] == dstys[i]:
+            # y is same / horiz line
+            # logging.debug(f"y same;horzn line {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+
+            for x in range(min(srcxs[i], dstxs[i]), max(srcxs[i], dstxs[i]) + 1):
+                key = f"{x}-{srcys[i]}"
+                # logging.debug(f"Updating {key}")
+                if not coveredpoints.get(key):
+                    coveredpoints[key] = 0
+                coveredpoints[key] = int(coveredpoints[key]) + 1
+            # logging.debug(f"Board\n{coveredpoints}")
+
         else:
-            boards[len(boards)-1].append(data[line].rstrip().split(" "))
+            # logging.debug(f"Line Not Hzn/Vrt, Skipping. {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+            pass
     #
-    #print(callednumbers)
-    for board in boards:
-        for row in board:
-            for item in row:
-                if item == '':
-                    row.remove('')
-    #
-    # for brd in boards:
-    #     print("")
-    #     for row in brd:
-    #         print(row)
+    # for x in range(0,10):
+    #     for y in range(0,10):
+    #         val=coveredpoints.get(f"{x}-{y}")
+    #         if val:
+    #             print(val,end="")
+    #         else:
+    #             print(".",end="")
+    #     print()
 
-    for num in callednumbers:
-        for brd in boards:
-            for row in brd:
-                for i in range(len(row)):
-                    if row[i] == num:
-                        row[i] = "X"
-        # now after called number, check for any winners.
-            if isWinner(brd):
-                logging.debug(f"Board Winner Found: {num} on {brd}")
-                finaloutput = (int(num) * int(boardSum(brd)))
-                logging.debug(f"WinningNum: {finaloutput}")
-                return finaloutput
-        # if winner, return sum nonX #s * num
-    #
-    # logging.debug("Board Winner Not Found")
-    # for brd in boards:
-    #     print("")
-    #     for row in brd:
-    #         print(row)
+    # logging.debug(f"Final Board {coveredpoints}")
+    count = 0
+    for k, v in coveredpoints.items():
+        if v > 1:
+            count += 1
+    return count
 
-    return 0
 
 def puzzle02(data):
     logging.debug("Executing Puzzle Stage 2")
-    callednumbers = data[0].rstrip().split(",")
 
-    boards = []
-    for line in range(len(data)):
-        #print(data[line])
-        if line == 0:
-            logging.debug("skipping 0 line.")
-        elif data[line] == "" or data[line] == "\n":
-            #logging.debug("new board detected")
-            board = []
-            boards.append(board)
+    srcxs = []
+    srcys = []
+    dstxs = []
+    dstys = []
+
+    for line in data:
+        m = re.match("^(\d+), *(\d+) *-> *(\d+), *(\d+)$", line)
+        if m:
+            srcxs.append(int(m.group(1)))
+            srcys.append(int(m.group(2)))
+            dstxs.append(int(m.group(3)))
+            dstys.append(int(m.group(4)))
+
+        # whichever is equal, draw line between other two.
+
+    # logging.debug(srcxs)
+
+    coveredpoints = {}
+
+    for i in range(len(srcxs)):
+        if srcxs[i] == dstxs[i]:
+            # x is same / vert line
+            # logging.debug(f"x same;vert line {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+            for y in range(min(srcys[i], dstys[i]), max(srcys[i], dstys[i]) + 1):
+                key = f"{srcxs[i]}-{y}"
+                # logging.debug(f"Updating {key}")
+                if not coveredpoints.get(key):
+                    coveredpoints[key] = 0
+                coveredpoints[key] = int(coveredpoints[key]) + 1
+            # logging.debug(f"Board\n{coveredpoints}")
+
+        elif srcys[i] == dstys[i]:
+            # y is same / horiz line
+            # logging.debug(f"y same;horzn line {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+
+            for x in range(min(srcxs[i], dstxs[i]), max(srcxs[i], dstxs[i]) + 1):
+                key = f"{x}-{srcys[i]}"
+                # logging.debug(f"Updating {key}")
+                if not coveredpoints.get(key):
+                    coveredpoints[key] = 0
+                coveredpoints[key] = int(coveredpoints[key]) + 1
+            # logging.debug(f"Board\n{coveredpoints}")
+
         else:
-            boards[len(boards)-1].append(data[line].rstrip().split(" "))
+            #logging.debug(f"Line Slanted. {srcxs[i]},{srcys[i]}->{dstxs[i]},{dstys[i]}")
+            sx = 0
+            sy = 0
+            dx = 0
+            dy = 0
+            if srcxs[i] > dstxs[i]:
+                # rev flow
+                sx = dstxs[i]
+                sy = dstys[i]
+                dx = srcxs[i]
+                dy = srcys[i]
+            else:
+                # normal
+                sx = srcxs[i]
+                sy = srcys[i]
+                dx = dstxs[i]
+                dy = dstys[i]
+            slopeup = True
+            if sy > dy:
+                slopeup = False
+            #logging.debug(f"SlopeUp?{slopeup}:{sx},{sy}->{dx},{dy}")
+            x = sx
+            y = sy
+            while x <= dx:
+                key = f"{x}-{y}"
+                #logging.debug(f"Updating {key}")
+                if not coveredpoints.get(key):
+                    coveredpoints[key] = 0
+                coveredpoints[key] = int(coveredpoints[key]) + 1
+
+                x += 1
+                if slopeup:
+                    y += 1
+                else:
+                    y -= 1
+
     #
-    #print(callednumbers)
-    for board in boards:
-        for row in board:
-            for item in row:
-                if item == '':
-                    row.remove('')
-    #
-    # for brd in boards:
-    #     print("")
-    #     for row in brd:
-    #         print(row)
+    # for x in range(0, 10):
+    #     for y in range(0, 10):
+    #         val = coveredpoints.get(f"{x}-{y}")
+    #         if val:
+    #             print(val, end="")
+    #         else:
+    #             print(".", end="")
+    #     print()
 
-    boardwinners=[False]*len(boards)
-    #print(boardwinners)
-
-    for num in callednumbers:
-        for brdptr in range(len(boards)):
-
-            for brdx in range(len(boards[brdptr])):
-                for brdy in range(len(boards[brdptr][0])):
-
-                    if boards[brdptr][brdx][brdy] == num:
-                        boards[brdptr][brdx][brdy] = "X"
-
-                    if isWinner(boards[brdptr]):
-                        boardwinners[brdptr]=True
-                        #if no winners, that board waas last winner
-                        winctr = 0
-                        for wins in boardwinners:
-                            if wins == True:
-                                winctr += 1
-                        if winctr == len(boardwinners):
-                            return int(num) * boardSum(boards[brdptr])
-
-        # if winner, return sum nonX #s * num
-    #
-    # logging.debug("Board Winner Not Found")
-    # for brd in boards:
-    #     print("")
-    #     for row in brd:
-    #         print(row)
+    # logging.debug(f"Final Board {coveredpoints}")
+    count = 0
+    for k, v in coveredpoints.items():
+        if v > 1:
+            count += 1
+    return count
 
     return 0
+
 
 def runfinalinput():
     finaldata = readinputfile2("finalinput.txt")
     logging.info("Final Answer for Puzzle 1:" + str(puzzle01(finaldata)))
     logging.info("Final Answer for Puzzle 2:" + str(puzzle02(finaldata)))
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    #Assuming Tests pass, run the final input
+    # Assuming Tests pass, run the final input
     runfinalinput()
-
