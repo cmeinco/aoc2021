@@ -25,7 +25,6 @@ def getFuelUsed(dst, data):
 
 def getSuperFuelUsed(dst, data):
     fuel = 0
-    #for x in range(min(data), max(data)+1):
     for crab in data:
         steps = abs(crab-dst)
         if steps>0:
