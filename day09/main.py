@@ -78,63 +78,50 @@ def puzzle01(data):
     # 550 wasn't checking if =
 
 
-def getBasinSize(board, x, y, prevnum, firstrun=False):
+def getBasinSize(board, x, y):
+    if x > 90 and x <=100 and y > 8 and y < 14:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.INFO)
+    #logging.debug(f"calculatingBasinSize of {x},{y}")
     # find the 9s and edges then stop
     size = 1
-    if y < 0 or y >= len(board[0]):
+    if y < 0 or y >= len(board[0]): # outside board
+        logging.debug(f"y out of range")
         return 0
-    if x < 0 or x >= len(board):
+    if x < 0 or x >= len(board): # outside board
+        logging.debug(f"x out of range")
         return 0
-    if board[x][y] == 9:
+    if board[x][y] >= 9: # edge of basin
+        logging.debug(f"hit a niner {x},{y}")
         return 0
-    if board[x][y] == -1:
+    if board[x][y] < 0: # already traversed this path
+        logging.debug(f"somebody already looked here {x},{y}")
         return 0
     # logging.debug(f"{x},{y}: Boardxy: {board[x][y]} ? prevnum {prevnum}; first: {firstrun}")
     # if board[x][y] <= prevnum and not firstrun:
     #     logging.debug(f"xy<prevnum; return 0")
     #     return 0
 
-    prevnum = board[x][y]
-    board[x][y] = -1
-    # check neighbors who havent been checked.
-    # check up
-    size += getBasinSize(board, x + 1, y,     prevnum)
-    # check down
-    size += getBasinSize(board, x - 1, y,     prevnum)
-    # check right
-    size += getBasinSize(board, x,     y + 1, prevnum)
-    # check left
-    size += getBasinSize(board, x,     y - 1, prevnum)
-    return size
+    #logging.debug(f"Value: {x},{y}:{board[x][y]}")
 
-
-def getBasinSize_broken(board, x, y, prevnum, firstrun=False):
-    # find the 9s and edges then stop
-    size = 1
-    if y < 0 or y >= len(board[0]):
-        return 0
-    if x < 0 or x >= len(board):
-        return 0
-    if board[x][y] == 9:
-        return 0
-    if board[x][y] == -1:
-        return 0
-    if board[x][y] > prevnum and not firstrun:
-        return 0
-    else:
-        prevnum=board[x][y]
+    #prevnum = board[x][y]
+    if board[x][y] >= 0:
         board[x][y] = -1
-        # check neighbors who havent been checked.
-        # check up
-        size += getBasinSize(board, x + 1, y, prevnum)
-        # check down
-        size += getBasinSize(board, x - 1, y, prevnum)
-        # check right
-        size += getBasinSize(board, x, y + 1, prevnum)
-        # check left
-        size += getBasinSize(board, x, y - 1, prevnum)
-    return size
+    else:
+        board[x][y] -= 1 # looking for double hits
 
+
+    # check neighbors who havent been checked.
+    # check right
+    size += getBasinSize(board, x,     y + 1)
+    # check left
+    size += getBasinSize(board, x,     y - 1)
+    # check up
+    size += getBasinSize(board, x + 1, y)
+    # check down
+    size += getBasinSize(board, x - 1, y)
+    return size
 
 
 def puzzle02(data):
@@ -160,29 +147,37 @@ def puzzle02(data):
 
     # now have the lowest points
     # find the basin size of each point
-
-    logging.debug("-----PRE ANALYSIS------")
-    for x in range(len(board)):
-        logging.debug(f"{board[x]}")
-
+    #
+    # logging.debug("-----PRE ANALYSIS------")
+    # for x in range(len(board)):
+    #     logging.debug(f"{board[x]}")
+    #
 
     basinSizes = []
 
     for x in range(0, len(lowest_x)):
         # basically search for edges or 9s and stop
         #evalmap = board.copy()
-        basinSizes.append(
-            getBasinSize(board, lowest_x[x], lowest_y[x],
-                         board[lowest_x[x]][lowest_y[x]], firstrun=True)
-        )
+        #logging.debug(f"------Checking Low------- {lowest_x[x]},{lowest_y[x]}")
+        logging.debug(f"{lowest_x[x]},{lowest_y[x]}:{board[lowest_x[x]][lowest_y[x]]}")
+        if lowest_x[x] == 99 and lowest_y[x] == 11:
+            logging.getLogger().setLevel(logging.DEBUG)
+
+        else:
+            logging.getLogger().setLevel(logging.INFO)
+        xsize = getBasinSize(board, lowest_x[x], lowest_y[x])
+        logging.debug(f"{lowest_x[x]},{lowest_y[x]}:{board[lowest_x[x]][lowest_y[x]]}:{xsize}")
+        basinSizes.append(xsize)
+        # if basinSizes.pop() == 230:
+        #     logging.debug(f"230 found at {lowest_x[x]},{lowest_y[x]}")
         # logging.debug("-----MAP-----")
         # for x in range(len(evalmap)):
         #     logging.debug(f"{evalmap[x]}")
         #logging.debug(evalmap)
-
-    logging.debug("-----POST ANALYSIS------")
-    for x in range(len(board)):
-        logging.debug(f"{board[x]}")
+    #
+    # logging.debug("-----POST ANALYSIS------")
+    # for x in range(len(board)):
+    #     logging.debug(f"{board[x]}")
 
     basinSizes.sort()
     basinSizes.reverse()
@@ -199,7 +194,7 @@ def puzzle02(data):
             else:
                 logging.debug(f"Found strange {cell} in {x}")
             totalcells+=1
-    logging.debug(f"sumbasin: {sum(basinSizes)}; -1s: {count1s}; 9s: {count9s}; 9s1ssum:{count9s+count1s} total: {totalcells}; ")
+    logging.info(f"foundBasins: {len(basinSizes)}; sumbasin: {sum(basinSizes)}; -1s: {count1s}; 9s: {count9s}; 9s1ssum:{count9s+count1s} total: {totalcells}; ")
 
     return basinSizes[0] * basinSizes[1] * basinSizes[2]
     # 6887120 too high
@@ -213,6 +208,6 @@ def runfinalinput():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     # Assuming Tests pass, run the final input
     runfinalinput()
