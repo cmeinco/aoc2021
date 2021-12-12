@@ -89,10 +89,10 @@ def getBasinSize(board, x, y, prevnum, firstrun=False):
         return 0
     if board[x][y] == -1:
         return 0
-    logging.debug(f"{x},{y}: Boardxy: {board[x][y]} ? prevnum {prevnum}; first: {firstrun}")
-    if board[x][y] <= prevnum and not firstrun:
-        logging.debug(f"xy<prevnum; return 0")
-        return 0
+    # logging.debug(f"{x},{y}: Boardxy: {board[x][y]} ? prevnum {prevnum}; first: {firstrun}")
+    # if board[x][y] <= prevnum and not firstrun:
+    #     logging.debug(f"xy<prevnum; return 0")
+    #     return 0
 
     prevnum = board[x][y]
     board[x][y] = -1
